@@ -1,28 +1,28 @@
 <div align="center">
 
-  <img src="https://nuvio.tv/assets/nuvio-app-logo-wordmark.webp" alt="Nuvio" width="320" />
+  <img src="https://nuvio.tv/assets/nuvio-app-logo-wordmark.webp" alt="Aura" width="320" />
 
   <p>
     A free, open-source media app for your phone, your desktop, and the TV you already own.
     <br />
-    Bring your own sources. Nuvio turns them into a library with artwork, ratings, subtitles, and your place saved on every screen.
+    Bring your own sources. Aura turns them into a library with artwork, ratings, subtitles, and your place saved on every screen.
   </p>
 
-  [Website](https://nuvio.tv) · [GitHub releases](https://github.com/NuvioMedia/NuvioMobile/releases/latest) · [Support Nuvio](https://nuvio.tv/support)
+  [Website](https://nuvio.tv) · [GitHub releases](https://github.com/NuvioMedia/AuraMobile/releases/latest) · [Support Aura](https://nuvio.tv/support)
 
 </div>
 
-## Get Nuvio Mobile
+## Get Aura Mobile
 
-- [Android on Google Play](https://play.google.com/store/apps/details?id=com.nuvio.app)
-- [Android APK](https://github.com/NuvioMedia/NuvioMobile/releases/latest)
+- [Android on Google Play](https://play.google.com/store/apps/details?id=com.aura.app)
+- [Android APK](https://github.com/NuvioMedia/AuraMobile/releases/latest)
 - iOS must be built from source.
 
 ## Build from source
 
 ```bash
-git clone https://github.com/NuvioMedia/NuvioMobile.git
-cd NuvioMobile
+git clone https://github.com/NuvioMedia/AuraMobile.git
+cd AuraMobile
 ```
 
 ### Android
@@ -38,7 +38,7 @@ Android development requires Android Studio and the Android SDK.
 iOS development requires macOS and Xcode.
 
 ```bash
-env NUVIO_IOS_DISTRIBUTION=full xcodebuild \
+env AURA_IOS_DISTRIBUTION=full xcodebuild \
   -project iosApp/iosApp.xcodeproj \
   -scheme iosApp \
   -configuration Debug \

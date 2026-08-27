@@ -50,7 +50,7 @@ abstract class GenerateRuntimeConfigsTask : DefaultTask() {
             mkdirs()
             resolve("SupabaseConfig.kt").writeText(
                 """
-                |package com.nuvio.app.core.network
+                |package com.aura.app.core.network
                 |
                 |object SupabaseConfig {
                 |    const val URL = "${supabaseUrl.get()}"
@@ -65,7 +65,7 @@ abstract class GenerateRuntimeConfigsTask : DefaultTask() {
             mkdirs()
             resolve("SentryConfig.kt").writeText(
                 """
-                |package com.nuvio.app.core.diagnostics
+                |package com.aura.app.core.diagnostics
                 |
                 |object SentryConfig {
                 |    const val DSN = "${sentryDsn.get()}"
@@ -81,12 +81,12 @@ abstract class GenerateRuntimeConfigsTask : DefaultTask() {
             mkdirs()
             resolve("TraktConfig.kt").writeText(
                 """
-                |package com.nuvio.app.features.trakt
+                |package com.aura.app.features.trakt
                 |
                 |object TraktConfig {
                 |    const val CLIENT_ID = "${props.getProperty("TRAKT_CLIENT_ID", "")}" 
                 |    const val CLIENT_SECRET = "${props.getProperty("TRAKT_CLIENT_SECRET", "")}" 
-                |    const val REDIRECT_URI = "${props.getProperty("TRAKT_REDIRECT_URI", "nuvio://auth/trakt")}" 
+                |    const val REDIRECT_URI = "${props.getProperty("TRAKT_REDIRECT_URI", "aura://auth/trakt")}" 
                 |}
                 """.trimMargin()
             )
@@ -96,11 +96,11 @@ abstract class GenerateRuntimeConfigsTask : DefaultTask() {
             mkdirs()
             resolve("SimklConfig.kt").writeText(
                 """
-                |package com.nuvio.app.features.simkl
+                |package com.aura.app.features.simkl
                 |
                 |object SimklConfig {
                 |    const val CLIENT_ID = "${props.getProperty("SIMKL_CLIENT_ID", "")}"
-                |    const val REDIRECT_URI = "${props.getProperty("SIMKL_REDIRECT_URI", "nuvio://auth/simkl")}"
+                |    const val REDIRECT_URI = "${props.getProperty("SIMKL_REDIRECT_URI", "aura://auth/simkl")}"
                 |    const val APP_NAME = "${props.getProperty("SIMKL_APP_NAME", "nuvio")}"
                 |}
                 """.trimMargin()
@@ -111,7 +111,7 @@ abstract class GenerateRuntimeConfigsTask : DefaultTask() {
             mkdirs()
             resolve("IntroDbConfig.kt").writeText(
                 """
-                |package com.nuvio.app.features.player.skip
+                |package com.aura.app.features.player.skip
                 |
                 |object IntroDbConfig {
                 |    const val URL = "${props.getProperty("INTRODB_API_URL", "")}" 
@@ -124,7 +124,7 @@ abstract class GenerateRuntimeConfigsTask : DefaultTask() {
             mkdirs()
             resolve("ImdbEpisodeRatingsConfig.kt").writeText(
                 """
-                |package com.nuvio.app.features.details
+                |package com.aura.app.features.details
                 |
                 |object ImdbEpisodeRatingsConfig {
                 |    const val IMDB_RATINGS_API_BASE_URL = "${props.getProperty("IMDB_RATINGS_API_BASE_URL", "")}" 
@@ -138,7 +138,7 @@ abstract class GenerateRuntimeConfigsTask : DefaultTask() {
             mkdirs()
             resolve("PremiumizeConfig.kt").writeText(
                 """
-                |package com.nuvio.app.features.debrid
+                |package com.aura.app.features.debrid
                 |
                 |object PremiumizeConfig {
                 |    const val CLIENT_ID = "${props.getProperty("PREMIUMIZE_CLIENT_ID", "")}"
@@ -151,7 +151,7 @@ abstract class GenerateRuntimeConfigsTask : DefaultTask() {
             mkdirs()
             resolve("AppVersionConfig.kt").writeText(
                 """
-                |package com.nuvio.app.core.build
+                |package com.aura.app.core.build
                 |
                 |object AppVersionConfig {
                 |    const val VERSION_NAME = "${appVersionName.get()}"
@@ -165,7 +165,7 @@ abstract class GenerateRuntimeConfigsTask : DefaultTask() {
             mkdirs()
             resolve("CommunityConfig.kt").writeText(
                 """
-                |package com.nuvio.app.features.settings
+                |package com.aura.app.features.settings
                 |
                 |object CommunityConfig {
                 |    const val CONTRIBUTIONS_URL = "${props.getProperty("CONTRIBUTIONS_URL", "")}" 
@@ -212,20 +212,20 @@ val releaseAppVersionCode = readXcconfigValue(appVersionConfigFile, "CURRENT_PRO
     ?.toIntOrNull()
     ?: error("CURRENT_PROJECT_VERSION is missing or invalid in ${appVersionConfigFile.path}")
 val iosDistribution = (
-    providers.gradleProperty("nuvio.ios.distribution").orNull
-        ?: System.getenv("NUVIO_IOS_DISTRIBUTION")
-        ?: supabaseProps.getProperty("NUVIO_IOS_DISTRIBUTION")
+    providers.gradleProperty("aura.ios.distribution").orNull
+        ?: System.getenv("AURA_IOS_DISTRIBUTION")
+        ?: supabaseProps.getProperty("AURA_IOS_DISTRIBUTION")
         ?: "appstore"
     ).trim().lowercase()
 require(iosDistribution == "appstore" || iosDistribution == "full") {
-    "NUVIO_IOS_DISTRIBUTION must be 'appstore' or 'full'."
+    "AURA_IOS_DISTRIBUTION must be 'appstore' or 'full'."
 }
 val iosDistributionSourceDir = if (iosDistribution == "full") {
     "src/iosFull/kotlin"
 } else {
     "src/iosAppStore/kotlin"
 }
-val iosFrameworkBundleId = "com.nuvio.media"
+val iosFrameworkBundleId = "com.aura.media"
 val nuvioEngineAppleFramework = rootProject.file("../nuvio-engine/platform/apple/NuvioEngine.xcframework")
 val fullCommonSourceDir = project.file("src/fullCommonMain/kotlin")
 val generatedRuntimeConfigDir = layout.buildDirectory.dir("generated/runtime-config/kotlin")
@@ -240,17 +240,17 @@ val requestedAndroidDistributions = requestedGradleTasks.mapNotNull { taskName -
     }
 }.toSet()
 require(requestedAndroidDistributions.size <= 1) {
-    "Build Android full and playstore distributions separately, or set -Pnuvio.android.distribution=full|playstore."
+    "Build Android full and playstore distributions separately, or set -Paura.android.distribution=full|playstore."
 }
-val configuredAndroidDistribution = providers.gradleProperty("nuvio.android.distribution").orNull
-    ?: supabaseProps.getProperty("NUVIO_ANDROID_DISTRIBUTION")
+val configuredAndroidDistribution = providers.gradleProperty("aura.android.distribution").orNull
+    ?: supabaseProps.getProperty("AURA_ANDROID_DISTRIBUTION")
 val isAmbiguousAndroidPackageTask = requestedGradleTasks.any { taskName ->
     taskName == "build" ||
         taskName.startsWith("assemble") ||
         taskName.startsWith("bundle")
 } && requestedAndroidDistributions.isEmpty()
 require(configuredAndroidDistribution != null || !isAmbiguousAndroidPackageTask) {
-    "Set -Pnuvio.android.distribution=full|playstore for aggregate Android assemble/bundle tasks."
+    "Set -Paura.android.distribution=full|playstore for aggregate Android assemble/bundle tasks."
 }
 val androidDistribution = (
     configuredAndroidDistribution
@@ -258,7 +258,7 @@ val androidDistribution = (
         ?: "playstore"
     ).trim().lowercase()
 require(androidDistribution == "playstore" || androidDistribution == "full") {
-    "nuvio.android.distribution must be 'playstore' or 'full'."
+    "aura.android.distribution must be 'playstore' or 'full'."
 }
 val androidDistributionSourceDir = if (androidDistribution == "full") {
     "src/androidFull/kotlin"
@@ -289,9 +289,9 @@ val generateRuntimeConfigs = tasks.register<GenerateRuntimeConfigsTask>("generat
     localPropertiesFile.set(rootProject.layout.projectDirectory.file("local.properties"))
     appVersionName.set(releaseAppVersionName)
     appVersionCode.set(releaseAppVersionCode)
-    supabaseUrl.set(runtimeConfigValue("NUVIO_SUPABASE_URL"))
-    supabaseAnonKey.set(runtimeConfigValue("NUVIO_SUPABASE_ANON_KEY"))
-    supabaseFallbackUrl.set(runtimeConfigValue("NUVIO_SUPABASE_FALLBACK_URL"))
+    supabaseUrl.set(runtimeConfigValue("AURA_SUPABASE_URL", runtimeConfigValue("NUVIO_SUPABASE_URL")))
+    supabaseAnonKey.set(runtimeConfigValue("AURA_SUPABASE_ANON_KEY", runtimeConfigValue("NUVIO_SUPABASE_ANON_KEY")))
+    supabaseFallbackUrl.set(runtimeConfigValue("AURA_SUPABASE_FALLBACK_URL", runtimeConfigValue("NUVIO_SUPABASE_FALLBACK_URL")))
     sentryDsn.set(runtimeConfigValue("SENTRY_DSN"))
     sentryEnvironment.set(
         when {
@@ -308,7 +308,7 @@ tasks.withType<KotlinCompilationTask<*>>().configureEach {
 
 kotlin {
     android {
-        namespace = "com.nuvio.app"
+        namespace = "com.aura.app"
         compileSdk {
             version = release(libs.versions.android.compileSdk.get().toInt()) {
                 minorApiLevel = libs.versions.android.compileSdkMinor.get().toInt()
@@ -347,7 +347,7 @@ kotlin {
                 }
                 if (iosDistribution == "full") {
                     check(nuvioEngineSliceDirectory.resolve("libCNuvioEngine.a").isFile) {
-                        "Build the local Nuvio Engine Apple XCFramework before compiling iOS Full."
+                        "Build the local Aura Engine Apple XCFramework before compiling iOS Full."
                     }
                     create("nuvioengine") {
                         defFile(project.file("src/nativeInterop/cinterop/nuvioengine.def"))

@@ -11,7 +11,7 @@
 
     <application>
         <service
-            android:name="com.nuvio.app.features.player.PlayerNowPlayingService"
+            android:name="com.aura.app.features.player.PlayerNowPlayingService"
             tools:node="remove" />
     </application>
 

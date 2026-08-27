@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.Nuvio" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <item name="android:windowBackground">@color/nuvio_background</item>
+    <style name="Theme.Aura" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/aura_background</item>
     </style>
 
-    <style name="Theme.Nuvio.Splash" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/nuvio_background</item>
+    <style name="Theme.Aura.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/aura_background</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo</item>
-        <item name="postSplashScreenTheme">@style/Theme.Nuvio</item>
+        <item name="postSplashScreenTheme">@style/Theme.Aura</item>
     </style>
 
-    <style name="Theme.Nuvio.Splash.ArcticBlue" parent="@style/Theme.Nuvio.Splash">
+    <style name="Theme.Aura.Splash.ArcticBlue" parent="@style/Theme.Aura.Splash">
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo_arctic_blue</item>
     </style>
 
-    <style name="Theme.Nuvio.Splash.Emerald" parent="@style/Theme.Nuvio.Splash">
+    <style name="Theme.Aura.Splash.Emerald" parent="@style/Theme.Aura.Splash">
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo_emerald</item>
     </style>
 
-    <style name="Theme.Nuvio.Splash.RoseGold" parent="@style/Theme.Nuvio.Splash">
+    <style name="Theme.Aura.Splash.RoseGold" parent="@style/Theme.Aura.Splash">
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo_rose_gold</item>
     </style>
 
-    <style name="Theme.Nuvio.Splash.Copper" parent="@style/Theme.Nuvio.Splash">
+    <style name="Theme.Aura.Splash.Copper" parent="@style/Theme.Aura.Splash">
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo_copper</item>
     </style>
 
-    <style name="Theme.Nuvio.Splash.Graphite" parent="@style/Theme.Nuvio.Splash">
+    <style name="Theme.Aura.Splash.Graphite" parent="@style/Theme.Aura.Splash">
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo_graphite</item>
     </style>
 </resources>

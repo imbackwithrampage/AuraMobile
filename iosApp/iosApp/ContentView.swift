@@ -3,7 +3,7 @@ import SwiftUI
 import UIKit
 import ComposeApp
 
-private let nuvioBackgroundColor = UIColor(
+private let auraBackgroundColor = UIColor(
     red: 0.051,
     green: 0.051,
     blue: 0.051,
@@ -21,7 +21,7 @@ private enum NuvioComposeHost {
         onTabBarControllerAvailable: ((UITabBarController) -> Void)? = nil
     ) -> RootComposeViewController {
         _ = registerPlayerBridge
-        contentController.view.backgroundColor = nuvioBackgroundColor
+        contentController.view.backgroundColor = auraBackgroundColor
         return RootComposeViewController(
             contentController: contentController,
             disablesInteractiveContentPopGesture: disablesInteractiveContentPopGesture,
@@ -57,8 +57,8 @@ final class RootComposeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = nuvioBackgroundColor
-        contentController.view.backgroundColor = nuvioBackgroundColor
+        view.backgroundColor = auraBackgroundColor
+        contentController.view.backgroundColor = auraBackgroundColor
 
         addChild(contentController)
         view.addSubview(contentController.view)
@@ -252,10 +252,10 @@ enum NuvioAppTab: String, CaseIterable, Hashable {
 
     var iconAssetName: String {
         switch self {
-        case .home: return "NuvioTabHome"
-        case .search: return "NuvioTabSearch"
-        case .library: return "NuvioTabLibrary"
-        case .settings: return "NuvioTabProfile"
+        case .home: return "AuraTabHome"
+        case .search: return "AuraTabSearch"
+        case .library: return "AuraTabLibrary"
+        case .settings: return "AuraTabProfile"
         }
     }
 
@@ -841,9 +841,9 @@ private struct NativeToolbarReadabilityFade: View {
             .fill(
                 LinearGradient(
                     stops: [
-                        .init(color: Color(uiColor: nuvioBackgroundColor), location: 0),
-                        .init(color: Color(uiColor: nuvioBackgroundColor).opacity(0.78), location: 0.55),
-                        .init(color: Color(uiColor: nuvioBackgroundColor).opacity(0), location: 1),
+                        .init(color: Color(uiColor: auraBackgroundColor), location: 0),
+                        .init(color: Color(uiColor: auraBackgroundColor).opacity(0.78), location: 0.55),
+                        .init(color: Color(uiColor: auraBackgroundColor).opacity(0), location: 1),
                     ],
                     startPoint: .top,
                     endPoint: .bottom
@@ -1351,7 +1351,7 @@ struct NativeNavContentView: View {
                         legacyTabs
                     }
                 } else {
-                    Color(uiColor: nuvioBackgroundColor)
+                    Color(uiColor: auraBackgroundColor)
                         .ignoresSafeArea(.all)
                 }
             }

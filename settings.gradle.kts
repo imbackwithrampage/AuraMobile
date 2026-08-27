@@ -1,4 +1,4 @@
-rootProject.name = "Nuvio"
+rootProject.name = "Aura"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {

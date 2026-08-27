@@ -1,0 +1,186 @@
+name: Build AuraMobile APKs
+
+on:
+  workflow_dispatch:
+    inputs:
+      sync_upstream:
+        description: 'Sync & merge latest upstream updates from NuvioMedia/NuvioMobile'
+        required: true
+        type: boolean
+        default: true
+      upstream_branch:
+        description: 'Upstream branch to sync from'
+        required: true
+        type: string
+        default: 'cmp-rewrite'
+      variant:
+        description: 'Build task to execute'
+        required: true
+        type: choice
+        options:
+          - assembleFullDebug
+          - assembleFullRelease
+          - bundleFullRelease
+          - all
+        default: assembleFullDebug
+      push_sync:
+        description: 'Push rebranded sync changes back to AuraMobile repository'
+        required: false
+        type: boolean
+        default: false
+
+  push:
+    branches:
+      - cmp-rewrite
+      - main
+    paths-ignore:
+      - '**.md'
+      - 'Docs/**'
+      - '.gitignore'
+
+  schedule:
+    # Daily sync and check at 00:00 UTC
+    - cron: '0 0 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: auramobile-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build AuraMobile Android Binaries
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Sync upstream changes (NuvioMedia/NuvioMobile)
+        run: |
+          SYNC_ENABLED="${{ github.event_name == 'schedule' || inputs.sync_upstream == true }}"
+          UPSTREAM_BRANCH="${{ inputs.upstream_branch || 'cmp-rewrite' }}"
+
+          if [ "${SYNC_ENABLED}" = "true" ]; then
+            echo "::group::Fetching from upstream NuvioMedia/NuvioMobile"
+            git remote add upstream https://github.com/NuvioMedia/NuvioMobile.git 2>/dev/null || git remote set-url upstream https://github.com/NuvioMedia/NuvioMobile.git
+            git fetch upstream "${UPSTREAM_BRANCH}"
+            
+            echo "Merging upstream/${UPSTREAM_BRANCH}..."
+            if ! git merge "upstream/${UPSTREAM_BRANCH}" --no-edit -m "chore(upstream): merge upstream updates from NuvioMedia/NuvioMobile (${UPSTREAM_BRANCH})"; then
+              echo "Merge conflicts encountered; resolving in favor of upstream prior to automated rebranding..."
+              git checkout --theirs . || true
+              git add .
+              git commit -m "chore(upstream): auto-resolve merge from upstream/${UPSTREAM_BRANCH}" || true
+            fi
+            echo "::endgroup::"
+          else
+            echo "Upstream sync skipped by configuration."
+          fi
+
+      - name: Set up Python 3
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Execute AuraMobile Rebranding Engine
+        run: |
+          echo "::group::Executing apply_rebrand.py"
+          python3 apply_rebrand.py
+          echo "::endgroup::"
+
+      - name: Push Rebranded Sync (if requested)
+        run: |
+          PUSH_ENABLED="${{ inputs.push_sync == true || (github.event_name == 'schedule' && github.ref_name == 'cmp-rewrite') }}"
+          if [ "${PUSH_ENABLED}" = "true" ]; then
+            if [ -n "$(git status --porcelain)" ]; then
+              echo "Committing and pushing rebranded code back to origin..."
+              git add -A
+              git commit -m "chore(rebrand): automated AuraMobile rebranding sync"
+              git push origin "HEAD:${{ github.ref_name || 'cmp-rewrite' }}"
+            else
+              echo "Working tree clean, nothing to push."
+            fi
+          fi
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Create local.properties
+        run: |
+          # Generate placeholder local.properties if signing keys are not provided
+          touch local.properties
+          if [ -n "${{ secrets.AURA_LOCAL_PROPERTIES_BASE64 }}" ]; then
+            printf '%s' "${{ secrets.AURA_LOCAL_PROPERTIES_BASE64 }}" | base64 --decode > local.properties
+          fi
+          if [ -n "${{ secrets.AURA_RELEASE_KEYSTORE_BASE64 }}" ]; then
+            keystore_path="${RUNNER_TEMP}/aura-release.jks"
+            printf '%s' "${{ secrets.AURA_RELEASE_KEYSTORE_BASE64 }}" | base64 --decode > "${keystore_path}"
+            printf '\nAURA_RELEASE_STORE_FILE=%s\n' "${keystore_path}" >> local.properties
+          fi
+
+      - name: Build Android Binaries
+        run: |
+          BUILD_TASK="${{ inputs.variant || 'assembleFullDebug' }}"
+          echo "Executing Gradle task for variant: ${BUILD_TASK}"
+
+          case "${BUILD_TASK}" in
+            assembleFullDebug)
+              ./gradlew :androidApp:assembleFullDebug --stacktrace
+              ;;
+            assembleFullRelease)
+              ./gradlew :androidApp:assembleFullRelease --stacktrace
+              ;;
+            bundleFullRelease)
+              ./gradlew :androidApp:bundleFullRelease --stacktrace
+              ;;
+            all)
+              ./gradlew :androidApp:assembleFullDebug :androidApp:assembleFullRelease :androidApp:bundleFullRelease --stacktrace
+              ;;
+            *)
+              ./gradlew :androidApp:${BUILD_TASK} --stacktrace
+              ;;
+          esac
+
+      - name: Upload APK Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: AuraMobile-APKs-${{ github.run_number }}
+          path: |
+            androidApp/build/outputs/apk/**/*.apk
+          if-no-files-found: ignore
+
+      - name: Upload AAB Bundle Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: AuraMobile-Bundles-${{ github.run_number }}
+          path: |
+            androidApp/build/outputs/bundle/**/*.aab
+          if-no-files-found: ignore
+
+      - name: Generate Build Summary
+        run: |
+          echo "### 🚀 AuraMobile Build Completed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "#### Generated Binaries:" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          find androidApp/build/outputs/ -type f \( -name "*.apk" -o -name "*.aab" \) -exec ls -lh {} + 2>/dev/null || echo "No binary outputs found." >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
