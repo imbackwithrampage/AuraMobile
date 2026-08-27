@@ -646,6 +646,44 @@ def refactor_directories_and_files():
                     merge_and_move_tree(nuvio_dir, aura_dir)
                     refactored_dirs.append(str(aura_dir.relative_to(WORKSPACE)))
 
+    # Ensure AppFeaturePolicy is a shared object in commonMain and remove flavor duplicates
+    common_policy = WORKSPACE / "composeApp/src/commonMain/kotlin/com/aura/app/core/build/AppFeaturePolicy.kt"
+    common_policy.parent.mkdir(parents=True, exist_ok=True)
+    common_policy.write_text("""package com.aura.app.core.build
+
+enum class TrailerPlaybackMode {
+    IN_APP,
+    EXTERNAL,
+}
+
+object AppFeaturePolicy {
+    val pluginsEnabled: Boolean = true
+    val supportersContributorsPageEnabled: Boolean = true
+    val donationActionsEnabled: Boolean = true
+    val donationProgressEnabled: Boolean = true
+    val accountDeletionEnabled: Boolean = false
+    val personalMediaAddonCopyEnabled: Boolean = true
+    val p2pEnabled: Boolean = true
+    val trailerPlaybackMode: TrailerPlaybackMode = TrailerPlaybackMode.IN_APP
+    val heroTrailerPlaybackSupported: Boolean = true
+    val inAppUpdaterEnabled: Boolean = true
+    val imdbRatingLogoEnabled: Boolean = true
+    val mediaPlaybackForegroundServiceEnabled: Boolean = true
+    val customServerConnectionsEnabled: Boolean = true
+    val debugBackendSwitcherEnabled: Boolean = true
+}
+""", encoding="utf-8")
+
+    for flavor_policy in [
+        WORKSPACE / "composeApp/src/androidFull/kotlin/com/aura/app/core/build/AppFeaturePolicy.android.kt",
+        WORKSPACE / "composeApp/src/androidPlaystore/kotlin/com/aura/app/core/build/AppFeaturePolicy.android.kt",
+        WORKSPACE / "composeApp/src/desktopMain/kotlin/com/aura/app/core/build/AppFeaturePolicy.desktop.kt",
+        WORKSPACE / "composeApp/src/iosAppStore/kotlin/com/aura/app/core/build/AppFeaturePolicy.ios.kt",
+        WORKSPACE / "composeApp/src/iosFull/kotlin/com/aura/app/core/build/AppFeaturePolicy.ios.kt",
+    ]:
+        if flavor_policy.exists():
+            flavor_policy.unlink()
+
     print(f"[REFACTOR] Completed on-disk directory refactoring: {len(refactored_dirs)} package roots merged.")
     return refactored_dirs
 
