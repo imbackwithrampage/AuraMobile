@@ -42,8 +42,8 @@
 # P2P runtime and Aura Engine JNI bridge. Native libraries are not processed
 # by R8, but their Kotlin/JNI wrapper classes and method names must stay stable.
 -keep class com.aura.app.features.p2p.** { *; }
--keep class com.nuvio.engine.** { *; }
--keep interface com.nuvio.engine.** { *; }
+-keep class com.aura.engine.** { *; }
+-keep interface com.aura.engine.** { *; }
 
 -keep class androidx.work.impl.WorkDatabase_Impl { *; }
 

@@ -2,7 +2,7 @@
 agp = "9.2.0"
 android-compileSdk = "37"
 android-compileSdkMinor = "0"
-android-minSdk = "24"
+android-minSdk = "26"
 android-targetSdk = "36"
 androidx-activity = "1.12.2"
 androidx-navigation3 = "1.1.1"

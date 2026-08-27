@@ -1,7 +1,7 @@
 package com.aura.app.features.p2p
 
-import com.nuvio.engine.NuvioUploadMode
-import com.nuvio.engine.NuvioTorrentProfile
+import com.aura.engine.NuvioUploadMode
+import com.aura.engine.NuvioTorrentProfile
 import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertEquals

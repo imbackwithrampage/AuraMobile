@@ -260,6 +260,7 @@ def generate_all_assets():
         rebrand_dir / "composeApp/src/androidMain/res/mipmap-xhdpi",
         rebrand_dir / "composeApp/src/androidMain/res/mipmap-xxhdpi",
         rebrand_dir / "composeApp/src/androidMain/res/mipmap-xxxhdpi",
+        rebrand_dir / "composeApp/src/androidMain/res/mipmap-anydpi-v26",
         rebrand_dir / "composeApp/src/androidMain/res/drawable",
         rebrand_dir / "iosApp/iosApp/Assets.xcassets/AppIcon.appiconset",
         rebrand_dir / "iosApp/iosApp/Assets.xcassets/LaunchImage.imageset",
@@ -275,6 +276,7 @@ def generate_all_assets():
 
     # Vector Drawables (XML) for all colorways
     android_drawable_dir = rebrand_dir / "composeApp/src/androidMain/res/drawable"
+    android_v26_dir = rebrand_dir / "composeApp/src/androidMain/res/mipmap-anydpi-v26"
     compose_drawable_dir = rebrand_dir / "composeApp/src/commonMain/composeResources/drawable"
 
     for cw_key, cw in COLORWAYS.items():
@@ -288,19 +290,80 @@ def generate_all_assets():
         else:
             (android_drawable_dir / f"ic_splash_logo_{cw_key}.xml").write_text(splash_xml, encoding="utf-8")
 
-    # Master and adaptive vector icons
-    ic_launcher_xml = """<?xml version="1.0" encoding="utf-8"?>
+    # Foreground & monochrome vector drawables
+    ic_launcher_foreground_xml = """<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:pathData="M54,20 A34,34 0 1,0 54,88 A34,34 0 1,0 54,20 Z"
+        android:strokeWidth="5"
+        android:strokeLineCap="round">
+        <aapt:attr name="android:strokeColor">
+            <gradient
+                android:startX="20"
+                android:startY="20"
+                android:endX="88"
+                android:endY="88"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#FF00FFFF" />
+                <item android:offset="0.5" android:color="#FF8A2BE2" />
+                <item android:offset="1.0" android:color="#FF00E5FF" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path
+        android:pathData="M46,40 L68,54 L46,68 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="46"
+                android:startY="40"
+                android:endX="68"
+                android:endY="68"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#FF00FFFF" />
+                <item android:offset="1.0" android:color="#FFFFFFFF" />
+            </gradient>
+        </aapt:attr>
+    </path>
+</vector>
+"""
+    ic_launcher_monochrome_xml = """<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:pathData="M54,20 A34,34 0 1,0 54,88 A34,34 0 1,0 54,20 Z"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="5"
+        android:strokeLineCap="round" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M46,40 L68,54 L46,68 Z" />
+</vector>
+"""
+    (android_drawable_dir / "ic_launcher_foreground.xml").write_text(ic_launcher_foreground_xml, encoding="utf-8")
+    (android_drawable_dir / "ic_launcher_monochrome.xml").write_text(ic_launcher_monochrome_xml, encoding="utf-8")
+    (compose_drawable_dir / "ic_launcher_foreground.xml").write_text(ic_launcher_foreground_xml, encoding="utf-8")
+    (compose_drawable_dir / "ic_launcher_monochrome.xml").write_text(ic_launcher_monochrome_xml, encoding="utf-8")
+
+    # Adaptive icons for mipmap-anydpi-v26 ONLY
+    for cw_key in COLORWAYS.keys():
+        adaptive_xml = f"""<?xml version="1.0" encoding="utf-8"?>
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-    <background android:drawable="@color/aura_background"/>
-    <foreground android:drawable="@drawable/ic_launcher_foreground"/>
-    <monochrome android:drawable="@drawable/ic_launcher_monochrome"/>
+    <background android:drawable="@color/aura_background" />
+    <foreground android:drawable="@drawable/ic_launcher_foreground" />
+    <monochrome android:drawable="@drawable/ic_launcher_monochrome" />
 </adaptive-icon>
 """
-    ic_launcher_round_xml = ic_launcher_xml
-    (android_drawable_dir / "ic_launcher.xml").write_text(ic_launcher_xml, encoding="utf-8")
-    (android_drawable_dir / "ic_launcher_round.xml").write_text(ic_launcher_round_xml, encoding="utf-8")
-    (compose_drawable_dir / "ic_launcher.xml").write_text(ic_launcher_xml, encoding="utf-8")
-    (compose_drawable_dir / "ic_launcher_round.xml").write_text(ic_launcher_round_xml, encoding="utf-8")
+        if cw_key == "original":
+            (android_v26_dir / "ic_launcher.xml").write_text(adaptive_xml, encoding="utf-8")
+            (android_v26_dir / "ic_launcher_round.xml").write_text(adaptive_xml, encoding="utf-8")
+        else:
+            (android_v26_dir / f"ic_launcher_{cw_key}.xml").write_text(adaptive_xml, encoding="utf-8")
 
     # Generate Colorway PNG slices for Android Mipmaps
     mipmap_sizes = {
@@ -364,12 +427,15 @@ def generate_all_assets():
             (ios_icon_dir / "app-icon-1024.png").write_bytes(ios_1024)
             (ios_icon_dir / "Contents.json").write_text(ios_contents_json, encoding="utf-8")
 
-    # Clean up any legacy .webp icon files to prevent duplicate resource conflicts
-    for base_dest in [WORKSPACE / "androidApp/src/main/res", WORKSPACE / "composeApp/src/androidMain/res"]:
+    # Clean up any legacy .webp icon files or misplaced adaptive icons in non-v26 folders
+    for base_dest in [WORKSPACE / "androidApp/src/main/res", WORKSPACE / "composeApp/src/androidMain/res", WORKSPACE / "composeApp/src/commonMain/composeResources"]:
         if base_dest.exists():
             for webp_file in base_dest.glob("**/*.webp"):
                 if "ic_launcher" in webp_file.name or "ic_splash" in webp_file.name:
                     webp_file.unlink()
+            for misplaced_adaptive in [base_dest / "drawable/ic_launcher.xml", base_dest / "drawable/ic_launcher_round.xml"]:
+                if misplaced_adaptive.exists():
+                    misplaced_adaptive.unlink()
 
     print("[ASSETS] Completed all colorway assets and icon matrices successfully.")
 
@@ -385,6 +451,9 @@ EXCLUDE_DIRS = {
 }
 
 TOKEN_REPLACEMENTS = [
+    ("com.nuvio.", "com.aura."),
+    ("package com.nuvio.", "package com.aura."),
+    ("import com.nuvio.", "import com.aura."),
     ("com.nuvio.app.nativebridge", "com.aura.app.nativebridge"),
     ("com.nuvio.app", "com.aura.app"),
     ("com.nuvio.android", "com.aura.android"),

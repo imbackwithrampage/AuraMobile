@@ -289,9 +289,9 @@ val generateRuntimeConfigs = tasks.register<GenerateRuntimeConfigsTask>("generat
     localPropertiesFile.set(rootProject.layout.projectDirectory.file("local.properties"))
     appVersionName.set(releaseAppVersionName)
     appVersionCode.set(releaseAppVersionCode)
-    supabaseUrl.set(runtimeConfigValue("AURA_SUPABASE_URL", runtimeConfigValue("AURA_SUPABASE_URL")))
-    supabaseAnonKey.set(runtimeConfigValue("AURA_SUPABASE_ANON_KEY", runtimeConfigValue("AURA_SUPABASE_ANON_KEY")))
-    supabaseFallbackUrl.set(runtimeConfigValue("AURA_SUPABASE_FALLBACK_URL", runtimeConfigValue("AURA_SUPABASE_FALLBACK_URL")))
+    supabaseUrl.set(runtimeConfigValue("AURA_SUPABASE_URL"))
+    supabaseAnonKey.set(runtimeConfigValue("AURA_SUPABASE_ANON_KEY"))
+    supabaseFallbackUrl.set(runtimeConfigValue("AURA_SUPABASE_FALLBACK_URL"))
     sentryDsn.set(runtimeConfigValue("SENTRY_DSN"))
     sentryEnvironment.set(
         when {
