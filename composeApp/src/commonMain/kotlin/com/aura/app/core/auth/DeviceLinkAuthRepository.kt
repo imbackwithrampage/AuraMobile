@@ -1,9 +1,9 @@
-package com.nuvio.app.core.auth
+package com.aura.app.core.auth
 
 import co.touchlab.kermit.Logger
-import com.nuvio.app.core.network.ServerConfiguration
-import com.nuvio.app.core.network.ServerConfigurationRepository
-import com.nuvio.app.core.network.SupabaseProvider
+import com.aura.app.core.network.ServerConfiguration
+import com.aura.app.core.network.ServerConfigurationRepository
+import com.aura.app.core.network.SupabaseProvider
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.user.UserInfo
 import io.github.jan.supabase.auth.user.UserSession

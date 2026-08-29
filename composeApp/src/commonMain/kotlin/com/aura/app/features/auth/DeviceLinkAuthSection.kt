@@ -1,4 +1,4 @@
-package com.nuvio.app.features.auth
+package com.aura.app.features.auth
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,19 +26,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.nuvio.app.core.auth.DeviceLinkAuthFailure
-import com.nuvio.app.core.auth.DeviceLinkAuthState
-import nuvio.composeapp.generated.resources.Res
-import nuvio.composeapp.generated.resources.compose_auth_link_cancel
-import nuvio.composeapp.generated.resources.compose_auth_link_code_expired
-import nuvio.composeapp.generated.resources.compose_auth_link_creating_code
-import nuvio.composeapp.generated.resources.compose_auth_link_failed
-import nuvio.composeapp.generated.resources.compose_auth_link_open
-import nuvio.composeapp.generated.resources.compose_auth_link_open_failed
-import nuvio.composeapp.generated.resources.compose_auth_link_sign_in
-import nuvio.composeapp.generated.resources.compose_auth_link_signing_in
-import nuvio.composeapp.generated.resources.compose_auth_link_try_again
-import nuvio.composeapp.generated.resources.compose_auth_link_waiting
+import com.aura.app.core.auth.DeviceLinkAuthFailure
+import com.aura.app.core.auth.DeviceLinkAuthState
+import aura.composeapp.generated.resources.Res
+import aura.composeapp.generated.resources.compose_auth_link_cancel
+import aura.composeapp.generated.resources.compose_auth_link_code_expired
+import aura.composeapp.generated.resources.compose_auth_link_creating_code
+import aura.composeapp.generated.resources.compose_auth_link_failed
+import aura.composeapp.generated.resources.compose_auth_link_open
+import aura.composeapp.generated.resources.compose_auth_link_open_failed
+import aura.composeapp.generated.resources.compose_auth_link_sign_in
+import aura.composeapp.generated.resources.compose_auth_link_signing_in
+import aura.composeapp.generated.resources.compose_auth_link_try_again
+import aura.composeapp.generated.resources.compose_auth_link_waiting
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
